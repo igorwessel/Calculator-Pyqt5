@@ -36,8 +36,12 @@ class Calculator(QMainWindow):
         self.add_btn(QPushButton('+'), 2, 3, 1, 1)
         self.add_btn(QPushButton('-'), 3, 3, 1, 1)
 
-    def add_btn(self, btn, row, col, rowspan, colspan):
+    def add_btn(self, btn, row, col, rowspan, colspan, function=None, style=None):
         self.calcLayout.addWidget(btn, row, col, rowspan, colspan)
+
+        if style:
+            btn.setStyleSheet(style)
+
         btn.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding)
 
 
