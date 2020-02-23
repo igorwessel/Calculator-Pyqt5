@@ -1,5 +1,6 @@
 from PyQt5.QtWidgets import (
     QMainWindow, QApplication, QGridLayout, QLineEdit, QPushButton, QWidget, QSizePolicy)
+from PyQt5.QtCore import Qt
 
 
 class Calculator(QMainWindow):
@@ -11,6 +12,29 @@ class Calculator(QMainWindow):
         self.calcLayout = QGridLayout(self.main)
         self.setCentralWidget(self.main)
 
+        self.setStyleSheet("""
+        QMainWindow {
+            background-color: #9e9fb3;
+        }
+        
+        QLineEdit {
+            font-size: 50px;
+            color: black;
+        }
+        
+        QPushButton {
+            border: none;
+            background-color: #efefef;
+            font-size: 20px;
+            border-radius: 3px;
+        }
+        
+        QPushButton:pressed {
+            background-color: #959595;
+        }
+        
+        """)
+
         self._old_number = ''
         self._current_number = ''
         self._operator = ''
@@ -19,6 +43,7 @@ class Calculator(QMainWindow):
         # layout
 
         self.display_calc = QLineEdit()
+        self.display_calc.setAlignment(Qt.AlignRight)
         self.display_calc.setDisabled(True)
         self.calcLayout.addWidget(self.display_calc, 0, 0, 1, 5)
         self.display_calc.setFixedHeight(120)
@@ -52,11 +77,61 @@ class Calculator(QMainWindow):
         self.add_btn(QPushButton('C'), 5, 2, 1, 1)
 
         # operations mathematics
-        self.add_btn(QPushButton('÷'), 1, 3, 1, 2)
-        self.add_btn(QPushButton('x'), 2, 3, 1, 2)
-        self.add_btn(QPushButton('-'), 3, 3, 1, 2)
-        self.add_btn(QPushButton('+'), 4, 3, 1, 2)
-        self.add_btn(QPushButton('='), 5, 3, 1, 2,)
+        self.add_btn(QPushButton('÷'), 1, 3, 1, 2,
+                     style="""
+                     QPushButton {
+                        background-color: #1f32bb;
+                        color: white;
+                     }
+                     
+                     QPushButton:pressed {
+                        background-color: #1b1a60;
+                     }
+                     """)
+        self.add_btn(QPushButton('x'), 2, 3, 1, 2,
+                     style="""
+                     QPushButton {
+                        background-color: #1f32bb;
+                        color: white;
+                     }
+                     
+                     QPushButton:pressed {
+                        background-color: #1b1a60;
+                     }
+                     """)
+        self.add_btn(QPushButton('-'), 3, 3, 1, 2,
+                     style="""
+                     QPushButton {
+                        background-color: #1f32bb;
+                        color: white;
+                     }
+                     
+                     QPushButton:pressed {
+                        background-color: #1b1a60;
+                     }
+                     """)
+        self.add_btn(QPushButton('+'), 4, 3, 1, 2,
+                     style="""
+                     QPushButton {
+                        background-color: #1f32bb;
+                        color: white;
+                     }
+                     
+                     QPushButton:pressed {
+                        background-color: #1b1a60;
+                     }
+                     """)
+        self.add_btn(QPushButton('='), 5, 3, 1, 2,
+                     style="""
+                     QPushButton {
+                        background-color: #1f32bb;
+                        color: white;
+                     }
+                     
+                     QPushButton:pressed {
+                        background-color: #242391;
+                     }
+                     """)
 
     def operate(self, button_txt):
         """
@@ -82,7 +157,7 @@ class Calculator(QMainWindow):
             else:
                 # in this stage operator is '=', have a responsibility to perform a operate in old number and
                 # current number using o operator salved.
-                if isinstance(float(self._old_number), float):
+                if self._old_number.find('.') != -1:
                     if self._operator == '÷':
                         self._result_number = float(self._old_number) / float(self._current_number)
                     if self._operator == 'x':
@@ -92,15 +167,23 @@ class Calculator(QMainWindow):
                     if self._operator == '+':
                         self._result_number = float(self._old_number) + float(self._current_number)
                 else:
-                    if self._operator == '÷':
-                        self._result_number = round(int(self._old_number) / int(self._current_number), 2)
-                    if self._operator == 'x':
-                        self._result_number = int(self._old_number) * int(self._current_number)
-                    if self._operator == '-':
-                        self._result_number = int(self._old_number) - int(self._current_number)
-                    if self._operator == '+':
-                        self._result_number = int(self._old_number) + int(self._current_number)
-                self._current_number = str(self._result_number)
+                    try:
+                        if self._operator == '÷':
+                            try:
+                                self._result_number = round(int(self._old_number) / int(self._current_number), 2)
+                            except ZeroDivisionError:
+                                self._result_number = 'ERR'
+                                return
+                        if self._operator == 'x':
+                            self._result_number = int(self._old_number) * int(self._current_number)
+                        if self._operator == '-':
+                            self._result_number = int(self._old_number) - int(self._current_number)
+                        if self._operator == '+':
+                            self._result_number = int(self._old_number) + int(self._current_number)
+                    except:
+                        self._current_number = 'CAIU NA EXCECAO'
+                    else:
+                        self._current_number = str(self._result_number)
 
     def insert_in_display(self, button_txt):
         """
