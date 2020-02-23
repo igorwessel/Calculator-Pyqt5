@@ -11,6 +11,11 @@ class Calculator(QMainWindow):
         self.calcLayout = QGridLayout(self.main)
         self.setCentralWidget(self.main)
 
+        self._old_number = ''
+        self._current_number = ''
+        self._operator = ''
+        self._result_number = 0
+
         # layout
 
         self.display_calc = QLineEdit()
@@ -24,9 +29,7 @@ class Calculator(QMainWindow):
         # numbers buttons
 
         # first row
-        self.add_btn(QPushButton('%'), 1, 0, 1, 1)
-        self.add_btn(QPushButton('('), 1, 1, 1, 1)
-        self.add_btn(QPushButton(')'), 1, 2, 1, 1)
+        self.add_btn(QPushButton('AC'), 1, 0, 1, 3,)
 
         # second row
         self.add_btn(QPushButton('7'), 2, 0, 1, 1)
@@ -53,10 +56,81 @@ class Calculator(QMainWindow):
         self.add_btn(QPushButton('x'), 2, 3, 1, 2)
         self.add_btn(QPushButton('-'), 3, 3, 1, 2)
         self.add_btn(QPushButton('+'), 4, 3, 1, 2)
-        self.add_btn(QPushButton('='), 5, 3, 1, 2)
+        self.add_btn(QPushButton('='), 5, 3, 1, 2,)
 
-    def add_btn(self, btn, row, col, rowspan, colspan, function=None, style=None):
+    def operate(self, button_txt):
+        """
+        This function have responsibility for effectuate all the logic of calculator.
+        :param button_txt: receive button_txt.
+        :return: don't return anything.
+        """
+        if button_txt.isdigit():  # checking if button is a number.
+            self._current_number += button_txt
+        else:  # otherwise is a operator
+            if button_txt in ('÷', 'x', '-', '+'):
+                # have a responsibility insert in old number the current number and salve the operator.
+                self._operator = button_txt
+                self._old_number = self._current_number
+                self._current_number = ''
+            elif button_txt == 'AC':  # reset operation.
+                self._current_number, self._old_number, self._operator, self._result_number = '', '', '', ''
+            elif button_txt == 'C':  # reset the current number
+                self._current_number = ''
+            else:
+                # in this stage operator is '=', have a responsibility to perform a operate in old number and
+                # current number using o operator salved.
+                if self._operator == '÷':
+                    self._result_number = int(int(self._old_number) / int(self._current_number))
+                if self._operator == 'x':
+                    self._result_number = int(self._old_number) * int(self._current_number)
+                if self._operator == '-':
+                    self._result_number = int(self._old_number) - int(self._current_number)
+                if self._operator == '+':
+                    self._result_number = int(self._old_number) + int(self._current_number)
+                self._current_number = str(self._result_number)
+
+    def insert_in_display(self, button_txt):
+        """
+        This function have a responsability for insert the values in display.
+        :param button_txt: receive the button_text
+        :return: don't return anything.
+        """
+
+        self.operate(button_txt)  # This function have a responsibility for effectuate all logic of calculator.
+        if button_txt.isdigit():  # If button is a number insert in display.
+            self.display_calc.setText(str(self._current_number))
+        else:  # If button not is a number is a operator
+            if button_txt == '=':
+                if len(str(self._result_number)) >= 8:
+                    self.display_calc.setText('ERR')
+                else:
+                    self.display_calc.setText(str(self._result_number))
+            elif button_txt == 'C':
+                self.display_calc.setText('')
+            elif button_txt == 'AC':
+                self.display_calc.setText('0')
+
+    def add_btn(self, btn, row, col, rowspan=0, colspan=0, function=None, style=None):
+        """
+        Insert button in grid layout.
+        :param btn: text in button.
+        :param row: row in grid layout.
+        :param col: column in grid layout.
+        :param rowspan: default value is 0.
+        :param colspan: default value is 0
+        :param function: in case want add custom function for button.
+        :param style: in case want add custom style for button.
+        :return: don't return anything.
+        """
+
         self.calcLayout.addWidget(btn, row, col, rowspan, colspan)
+
+        if not function:
+            btn.clicked.connect(
+                lambda: self.insert_in_display(btn.text())
+            )
+        else:
+            btn.clicked.connect(function)
 
         if style:
             btn.setStyleSheet(style)
