@@ -65,7 +65,8 @@ class Calculator(QMainWindow):
         :return: don't return anything.
         """
         if button_txt.isdigit():  # checking if button is a number.
-            self._current_number += button_txt
+            if len(str(self._current_number)) <= 8:
+                self._current_number += button_txt
         else:  # otherwise is a operator
             if button_txt in ('÷', 'x', '-', '+'):
                 # have a responsibility insert in old number the current number and salve the operator.
@@ -98,7 +99,8 @@ class Calculator(QMainWindow):
 
         self.operate(button_txt)  # This function have a responsibility for effectuate all logic of calculator.
         if button_txt.isdigit():  # If button is a number insert in display.
-            self.display_calc.setText(str(self._current_number))
+            if len(str(self._current_number)) <= 8:
+                self.display_calc.setText(str(self._current_number))
         else:  # If button not is a number is a operator
             if button_txt == '=':
                 if len(str(self._result_number)) >= 8:
