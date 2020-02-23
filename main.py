@@ -73,6 +73,8 @@ class Calculator(QMainWindow):
                 self._operator = button_txt
                 self._old_number = self._current_number
                 self._current_number = ''
+            elif button_txt == '.':
+                self._current_number += button_txt
             elif button_txt == 'AC':  # reset operation.
                 self._current_number, self._old_number, self._operator, self._result_number = '', '', '', ''
             elif button_txt == 'C':  # reset the current number
@@ -80,14 +82,24 @@ class Calculator(QMainWindow):
             else:
                 # in this stage operator is '=', have a responsibility to perform a operate in old number and
                 # current number using o operator salved.
-                if self._operator == '÷':
-                    self._result_number = int(int(self._old_number) / int(self._current_number))
-                if self._operator == 'x':
-                    self._result_number = int(self._old_number) * int(self._current_number)
-                if self._operator == '-':
-                    self._result_number = int(self._old_number) - int(self._current_number)
-                if self._operator == '+':
-                    self._result_number = int(self._old_number) + int(self._current_number)
+                if isinstance(float(self._old_number), float):
+                    if self._operator == '÷':
+                        self._result_number = float(self._old_number) / float(self._current_number)
+                    if self._operator == 'x':
+                        self._result_number = float(self._old_number) * float(self._current_number)
+                    if self._operator == '-':
+                        self._result_number = float(self._old_number) - float(self._current_number)
+                    if self._operator == '+':
+                        self._result_number = float(self._old_number) + float(self._current_number)
+                else:
+                    if self._operator == '÷':
+                        self._result_number = round(int(self._old_number) / int(self._current_number), 2)
+                    if self._operator == 'x':
+                        self._result_number = int(self._old_number) * int(self._current_number)
+                    if self._operator == '-':
+                        self._result_number = int(self._old_number) - int(self._current_number)
+                    if self._operator == '+':
+                        self._result_number = int(self._old_number) + int(self._current_number)
                 self._current_number = str(self._result_number)
 
     def insert_in_display(self, button_txt):
@@ -111,6 +123,8 @@ class Calculator(QMainWindow):
                 self.display_calc.setText('')
             elif button_txt == 'AC':
                 self.display_calc.setText('0')
+            elif button_txt == '.':
+                self.display_calc.setText(str(self._current_number))
 
     def add_btn(self, btn, row, col, rowspan=0, colspan=0, function=None, style=None):
         """
